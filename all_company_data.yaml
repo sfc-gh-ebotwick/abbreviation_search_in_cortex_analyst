@@ -1,0 +1,68 @@
+name: all_company_data
+description: flattened view data containing company abbrev name and info
+tables:
+  - name: COMPANY_DATA
+    base_table:
+      database: SANDBOX
+      schema: MS
+      table: COMPANY_DATA
+    dimensions:
+      - name: FULL_COMPANY_NAME
+        expr: FULL_COMPANY_NAME
+        data_type: VARCHAR(16777216)
+        cortex_search_service:
+          database: SANDBOX
+          schema: MS
+          service: COMPANY_NAME_ABBREVIATION_SEARCH
+          literal_column: FULL_COMPANY_NAME
+        sample_values:
+          - Datastorm LLC
+          - GiggleX Corp.
+          - LlamaBear LLC
+          - GRMM
+        description: The full name of the company.
+        synonyms:
+          - comp_name
+          - company_title
+          - organization_name
+          - business_name
+          - company_designation
+          - corporate_name
+          - entity_name
+      - name: COMPANY_LOCATION
+        expr: COMPANY_LOCATION
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Boulder, CO
+          - Austin, TX
+          - Missoula, MT
+        description: The city and state where the company is located.
+        synonyms:
+          - company_address
+          - business_location
+          - office_location
+          - headquarters
+          - corporate_address
+          - geographical_location
+          - site_location
+          - facility_location
+    facts:
+      - name: NUM_EMPLOYEES
+        expr: NUM_EMPLOYEES
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '150'
+          - '220'
+          - '95'
+        description: The total number of employees working for a company.
+        synonyms:
+          - total_employees
+          - employee_count
+          - staff_size
+          - headcount
+          - workforce_size
+          - personnel_count
+custom_instructions: 'When asking for information about an abbreviated company - use the attached cortex search service to retrieve the associated company name for that abbreviation. '
+module_custom_instructions:
+  question_categorization: |
+    - Do NOT mark questions as ambiguous if an entity is unknown. Always attempt to generate sql for a question that is clear even if it has an unkown entity. Assume that the entity will be resolved in a later step in the process Abbreviated company names will be translated into full company names.
